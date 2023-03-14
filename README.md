@@ -1,6 +1,8 @@
 # Chat with Meta's LLaMA models at home made easy
 
-This repository is a chat example with [LLaMA](https://ai.facebook.com/blog/large-language-model-llama-meta-ai/) ([arXiv](https://arxiv.org/abs/2302.13971v1)) models running on a typical home PC. You will just need a NVIDIA videocard and some RAM to chat with model.
+This repository is a chat example with [LLaMA](https://ai.facebook.com/blog/large-language-model-llama-meta-ai/) ([arXiv](https://arxiv.org/abs/2302.13971v1)) models running on a typical home PC. You will just need a reasonable powerful CPU and some RAM to chat with model.
+这是LLaMA-chat的修改分支，可以在cpu上运行和LLaMA的对话，无需万恶的N卡，只要你有足够的内存和不错的CPU。
+
 
 This repo is heavily based on Meta's original repo: https://github.com/facebookresearch/llama
 
@@ -25,18 +27,24 @@ I am running this on 12700k/128 Gb RAM/NVIDIA 3070ti 8Gb/fast huge nvme and gett
 
 For example, **30B model uses around 70 Gb of RAM**. 7B model fits into 18 Gb. 13B model uses 48 Gb.
 
-If you do not have powerful videocard, you may use another repo for cpu-only inference: https://github.com/randaller/llama-cpu
+在我的测试后发现，7B的模型在使用Bfloat16运行需要大约13GB的内存，这意味着在16GB内存的电脑上有可能运行。
+LLaMA 7B should be able to fit in 13GB of RAM with Bfloat16,which is possible to run on systems with 16GB of ram.
+
+在11300H @4.0GHz处理器和16GB 3200MHz的系统上，我得到了大约2.1its每秒的速度，得到一个256tokens的回应大概需要两分钟。
+I am running LLaMA 7B on a 11300H @4.0GHz processor with 16GB 3200MHz memory,I got around 2.1its/s,which takes around 2 minutes to aquire a 256 tokens result.
+
 
 ### Conda Environment Setup Example for Windows 10+
 Download and install Anaconda Python https://www.anaconda.com and run Anaconda Prompt
 ```
 conda create -n llama python=3.10
 conda activate llama
-conda install pytorch torchvision torchaudio pytorch-cuda=11.7 -c pytorch -c nvidia
+conda install pytorch torchvision torchaudio -c pytorch
 ```
+(No CUDA needed)
 
 ### Setup
-In a conda env with pytorch / cuda available, run
+In a conda env with pytorch available, run
 ```
 pip install -r requirements.txt
 ```
@@ -44,7 +52,7 @@ Then in this repository
 ```
 pip install -e .
 ```
-
+s
 ### Download tokenizer and models
 magnet:?xt=urn:btih:ZXXDAUWYLRUXXBHUYEMS6Q5CE5WA3LVA&dn=LLaMA
 
