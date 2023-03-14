@@ -101,10 +101,10 @@ class Attention(nn.Module):
 
         self.cache_k = torch.zeros(
             (args.max_batch_size, args.max_seq_len, self.n_local_heads, self.head_dim)
-        ).cuda()
+        ).cpu()
         self.cache_v = torch.zeros(
             (args.max_batch_size, args.max_seq_len, self.n_local_heads, self.head_dim)
-        ).cuda()
+        ).cpu()
 
     def forward(self, x: torch.Tensor, start_pos: int, freqs_cis: torch.Tensor, mask: Optional[torch.Tensor]):
         bsz, seqlen, _ = x.shape
@@ -226,20 +226,20 @@ class Transformer(nn.Module):
 
         self.layer_locations = [None] * len(self.layers)
 
-        self.norm = RMSNorm(params.dim, eps=params.norm_eps).cuda()
+        self.norm = RMSNorm(params.dim, eps=params.norm_eps)
         self.output = skip_init(nn.Linear,
             params.dim,
             params.vocab_size,
             bias=False,
-        ).cuda()
+        )
 
         self.freqs_cis = precompute_freqs_cis(
             self.params.dim // self.params.n_heads, self.params.max_seq_len * 2
-        ).cuda()
+        )
 
     @torch.inference_mode()
     def forward(self, tokens: torch.Tensor, start_pos: int):
-        use_gpu = True  # start_pos == 0
+        use_gpu = False  # start_pos == 0
 
         _bsz, seqlen = tokens.shape
         h = self.tok_embeddings(tokens)

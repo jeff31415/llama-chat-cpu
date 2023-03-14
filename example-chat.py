@@ -68,7 +68,8 @@ def load(
     model = Transformer(model_args)
 
     checkpoints = sorted(Path(ckpt_dir).glob("*.pth"))
-    model.load_state_dict(torch.load(checkpoints[-1]), strict=False)
+    #model.load_state_dict(torch.load(checkpoints[-1]), strict=False)
+    model.load_state_dict(torch.load(checkpoints[-1], map_location=torch.device('cpu')), strict=False)
 
     for f in files:
         f.close()
@@ -80,8 +81,8 @@ def load(
 
 
 def main(
-        ckpt_dir: str,
-        tokenizer_path: str,
+        ckpt_dir: str = './model',
+        tokenizer_path: str = './tokenizer/tokenizer.model',
         temperature: float = 0.8,
         top_p: float = 0.95,  # use 0.95 or so for top_p sampler, and 0.0 for top_k sampler
         top_k: int = 40,
@@ -90,6 +91,9 @@ def main(
         max_seq_len: int = 2048,
         max_batch_size: int = 1,
 ):
+
+    torch.set_default_dtype(torch.bfloat16)
+
     generator = load(ckpt_dir, tokenizer_path, max_seq_len, max_batch_size)
 
     ctx = """A dialog, where User interacts with AI. AI is helpful, kind, obedient, honest, and knows its own limits.
